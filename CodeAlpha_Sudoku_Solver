@@ -1,0 +1,122 @@
+#include <iostream>
+
+using namespace std;
+
+const int SIZE = 9;
+
+// Check if number can be placed
+bool isSafe(int board[SIZE][SIZE], int row, int col, int num)
+{
+    // Row check
+    for (int x = 0; x < SIZE; x++)
+    {
+        if (board[row][x] == num)
+            return false;
+    }
+
+    // Column check
+    for (int x = 0; x < SIZE; x++)
+    {
+        if (board[x][col] == num)
+            return false;
+    }
+
+    // 3x3 Grid check
+    int startRow = row - row % 3;
+    int startCol = col - col % 3;
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (board[i + startRow][j + startCol] == num)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+// Solve Sudoku using Backtracking
+bool solveSudoku(int board[SIZE][SIZE])
+{
+    int row, col;
+    bool empty = false;
+
+    for (row = 0; row < SIZE; row++)
+    {
+        for (col = 0; col < SIZE; col++)
+        {
+            if (board[row][col] == 0)
+            {
+                empty = true;
+                goto FOUND;
+            }
+        }
+    }
+
+FOUND:
+
+    if (!empty)
+        return true;
+
+    for (int num = 1; num <= 9; num++)
+    {
+        if (isSafe(board, row, col, num))
+        {
+            board[row][col] = num;
+
+            if (solveSudoku(board))
+                return true;
+
+            board[row][col] = 0;
+        }
+    }
+
+    return false;
+}
+
+// Print Sudoku
+void printBoard(int board[SIZE][SIZE])
+{
+    cout << "\nSolved Sudoku:\n\n";
+
+    for (int i = 0; i < SIZE; i++)
+    {
+        for (int j = 0; j < SIZE; j++)
+        {
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main()
+{
+    int board[SIZE][SIZE];
+
+    cout << "=================================\n";
+    cout << "         SUDOKU SOLVER\n";
+    cout << "=================================\n";
+
+    cout << "Enter Sudoku Grid (Use 0 for empty cells):\n";
+
+    for (int i = 0; i < SIZE; i++)
+    {
+        for (int j = 0; j < SIZE; j++)
+        {
+            cin >> board[i][j];
+        }
+    }
+
+    if (solveSudoku(board))
+    {
+        printBoard(board);
+    }
+    else
+    {
+        cout << "\nNo Solution Exists!\n";
+    }
+
+    return 0;
+}
